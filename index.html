@@ -268,8 +268,17 @@
       ischeck: 0,
     },
     methods: {
+      checkInput () {
+        let sts = true
+        if (this.taskName=='' || this.from=='' || this.getDate=='' || this.emergency=='') {
+          sts = false
+        }
+        return sts
+      },
       insertTodo() {
-        let obj = {
+        let sts = this.checkInput() 
+        if (sts) {
+          let obj = {
           taskName: this.taskName,
           from: this.from,
           getDate: this.getDate,
@@ -279,7 +288,11 @@
         this.taskName = "";
         this.from = "";
         this.getDate = "";
-        this.emergency = "";
+        this.emergency = "1";
+        }else {
+          alert('please enter the task !')
+        }
+        
       },
       showObj(title, inx) {
         this.choseTitle = title;
