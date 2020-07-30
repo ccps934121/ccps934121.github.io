@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RRRRRRRRRRRR  J個是</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+
+    <div id="app">
+        <div class="List">
+            <div>
+                </div> 
+                    <div class="item">
+                        <div>任務名稱：
+                            <input type="text" v-model="QName" >
+                        </div> 
+                        <div>交辦人：
+                            <input type="text" v-model="UserName">
+                        </div>
+                        <div>交辦日期：
+                            <input type="date" v-model="dateTime">
+                        </div> 
+                        <div>
+                            緊急度：
+                            <select name="urgent" v-model="urgent">
+                                <option v-for="data , index in urgentData"  >{{data.name}}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div class="btn_set">
+                                <input type="button" value="按我送出" @click="doPush()"> 
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+                <div>
+                    <span class=spanStyle v-for="value,index in menu_type" @click="doOnclick(value.type,index)" >{{value.type}}({{value.count}})</span>
+                    <type-post :mydata="this[nowType]"  :type='nowType' :dindex='index' @doevent="dosetdata" ></type-post></post>
+                </div>
+                
+            </div>
+                        
+        </div>
+    </div>
+
+</body>
+</html> 
+
+<style>
+  #app {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+  }
+  #app > div {
+    margin-right: 10px;
+  }
+  .spanStyle{
+    background-color: rgb(193, 248, 207);
+    margin: 30px;
+    }
+  .List {
+    width: 350px;
+    background-color: #fff4c4;
+    flex-direction:  row ;
+    flex-wrap:  wrap
+  }
+  .item > div {
+    margin: 30px 20px;
+  }
+
+  .bottom {
+    background-color: #ff0000;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .bottom:hover {
+    background-color: #ff8c00;
+  }
+  input[type="text"], input[type="date"], textarea, select {
+    font: 16px/100% Arial, "\5FAE\8EDF\6B63\9ED1\9AD4";
+    color: #636363;
+    width: 100%;
+    line-height: 30px;
+    height: 30px;
+    border-radius: 4px;
+    overflow: hidden;
+    padding: 0 5px;
+    background-color: #fff;
+    overflow: hidden;
+    position: relative;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+/*按鈕樣式*/
+.btn_set {
+    text-align: center;
+    margin: 0 0 10px;
+}
+
+    .btn_set li {
+        display: inline-block;
+        margin: 0 5px;
+        min-width: 100px;
+    }
+
+        .btn_set li input[type="button"] {
+            border-radius: 4px;
+            background-color: #64abe1;
+            color: #fff;
+            padding: 0 10px;
+            line-height: 40px;
+            height: 40px;
+            width: 100%;
+        }
+
+            .btn_set li input[type="button"].del {
+                background-color: #a1a1a1;
+            }
+
+            .btn_set li input[type="button"]:hover {
+                background-color: #2880be;
+            }
+
+    .btn_set.full li {
+        width: 100%;
+        margin: 0;
+        display: block;
+    }
+
+    .btn_set.full a {
+        background-color: #75a8c8;
+        display: block;
+        color: #fff;
+        line-height: 34px;
+    }
+
+    .btn_set.full span.add {
+        display: inline-block;
+        vertical-align: top;
+        width: 30px;
+        height: 30px;
+        background: url(../images/side_btn_add.png) center center no-repeat;
+    }
+
+    .btn_set.full a:hover {
+        background-color: #2880be;
+    }
+  .title {
+    display: inline-block;
+    color: white;
+    margin: 0px 20px;
+    padding: 5px 5px;
+  }
+
+  .innerDiv {
+    height: 60px;
+    line-height: 60px;
+    border-bottom: 1px solid #4f4f4f;
+  }
+
+  .inner {
+    display: inline-block;
+    width: 120px;
+  }
+
+  .inner:first-child {
+    width: 30px;
+  }
+
+  .button {
+    width: 120px;
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .submit {
+    background-color: #548c00;
+  }
+
+  .submit:hover {
+    background-color: #6f8d42;
+  }
+
+  .delete {
+    background-color: #ae0000;
+  }
+  .delete:hover {
+    background-color: #c93b3b;
+  }
+</style>
+
+<script>
+    Vue.component('type-post',{
+        template:`
+                    <div>
+                        <div>
+                            <span >#</span> <span>任務名稱</span>  <span>交辦人</span>  <span>交辦日</span>  <span>期緊急度</span> 
+                        </div>
+                        <div v-for='value,index in mydata'><span>
+                            <input type="checkbox" :value="index"   v-model="nowdata" /></span>
+                            <span>{{value.QName}}</span>
+                            <span>{{value.UserName}}</span>
+                            <span>{{value.dateTime}}</span>
+                            <span>{{value.urgent}}</span>
+                        </div>
+                        <div v-if="mydata.length > 0">
+                            <input type="button" value="doing" v-if="type == 'todo'" @click="doClick('todo','doing','')" > 
+                            <input type="button" value="done" v-if="type == 'doing'" @click="doClick('doing','done','')"> 
+                            <input type="button" value="delete" v-if="type != 'delete' && type != 'done'" @click="doClick(type,'delete','1')"> 
+                        </div>
+
+                    </div>
+                `,
+        props:['mydata','type','dindex'],
+        methods: {
+            doClick(todel,type,del){
+                let newArray = [] ;
+                let dedata = [];
+                console.log(this.mydata)
+                let c = this.mydata ;
+                this.mydata.forEach( (data,index) => {
+                    if(this.nowdata.indexOf(index) != -1){
+                        newArray.push(data);
+                    }else{
+                        dedata.push(data)
+                    }
+                });
+
+                this.nowdata=[];
+                this.$emit('doevent',todel,dedata,type,newArray,this.dindex,del)
+            }
+            
+        },
+        data(){
+            return {
+                nowdata:[]
+            }
+
+        }
+    })
+
+    let le = new Vue({
+        el:'#app',
+        watch:{
+           
+        },
+        components:{
+            
+
+        },
+        computed:{
+            
+        },
+        data:{
+            urgentData: [{'name': '一般', 'value': '1'},{'name': '中等', 'value': '2'},{'name': '緊急', 'value': '3'}],
+            urgent:"一般",
+            QName:"我不知道任務",
+            UserName:"誰啊",
+            dateTime:"2020-01-01",
+            nowdata :"",
+            menu_type: [{'type': 'todo', 'count': 0},
+                {'type': 'doing', 'count': 0},
+                {'type': 'done', 'count': 0},
+                {'type': 'delete', 'count': 0}],
+            todo:[],
+            doing:[],
+            done:[],
+            delete:[],
+            nowType:"todo",
+            high:0,
+            weight:0,
+            count:0,
+            show:'',
+            index:0,
+        }, 
+        methods: {
+            doPush(index){
+                let nweData = {
+                    "QName": this.QName ,
+                    "UserName": this.UserName ,
+                    "dateTime": this.dateTime ,
+                    "urgent": this.urgent
+                }
+                this.todo.push(nweData);
+                // this.QName = "";
+                // this.UserName = "";
+                // this.dateTime = "";
+                this.menu_type[0].count = this.menu_type[0].count +1  ;
+            },
+            doOnclick(type,index){
+                this.nowType = type ;
+                this.index = index;
+            },
+            dosetdata(todel,nwemydata,type,newArray,dindex,isdel){
+                console.log('123')
+                this[todel]=nwemydata;
+                newArray.forEach(element => {
+                    this[type].push(element);
+                });
+                    
+                this.menu_type[dindex].count = nwemydata.length;
+                if(!isdel){
+                    this.menu_type[dindex+1].count = this.menu_type[dindex+1].count + newArray.length;
+                }else{
+                    this.menu_type[3].count = this.menu_type[3].count + newArray.length;
+                }
+            }
+        },
+    })
+
+</script>
