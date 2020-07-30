@@ -46,7 +46,7 @@
             :style="{'background-color':(index==ischeck)?'#4d8bd8':''}"
             @click="showObj(item, index)"
           >
-            {{item}}
+            {{item}} ({{getLength(item)}})
           </span>
         </div>
 
@@ -162,6 +162,7 @@
                     <span class="inner" v-for="item in head">
                         {{item}}
                     </span>
+                    <span v-if="title=='done'">完成日期</span>
                 </div>
                 <div v-for="(item,index) in obj" class="innerDiv">
                     <span class="inner">
@@ -178,6 +179,9 @@
                     </span>
                     <span class="inner">
                         {{getEmergency(item.emergency)}}
+                    </span>
+                    <span class="inner" v-if="item.donedate">
+                      {{item.donedate}}
                     </span>
                 </div>
                 <div style="text-align: right; margin-top: 20px" v-if="obj.length!=0">
@@ -216,7 +220,6 @@
       getEmergency(lev) {
           let msg = ''
           this.levels.forEach(item => {
-              console.log(item)
               if (item.level==lev) {
                 msg = item.title
               }
@@ -307,6 +310,10 @@
         let newarray = [];
         this[rdata.turn].forEach((element, index) => {
           if (rdata.indexs.indexOf(index) != -1) {
+            console.log(element)
+            if (rdata.to=='done') {
+              element.donedate = this.getToday()
+            }
             this[rdata.to].push(element);
           } else {
             newarray.push(element);
@@ -323,6 +330,13 @@
           this.isshow = this[rdata.turn];
         });
       },
+      getToday() {
+        const now = new Date()
+        return now.getFullYear() + '/' + (now.getMonth()+1) + '/' + now.getDate()
+      },
+      getLength(item) {
+        return this[item].length
+      }
     },
     mounted() {
       this.showObj("todo");
