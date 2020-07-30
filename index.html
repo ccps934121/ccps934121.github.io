@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="addList">
+        <div
+          style="
+            background-color: #ffdc35;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+          "
+        >
+          Add new task
+        </div>
+        <div class="item">
+          <div>任務名稱：<input type="text" v-model="taskName" /></div>
+          <div>交辦人：<input type="text" v-model="from" /></div>
+          <div>交辦日期：<input type="date" v-model="getDate" /></div>
+          <div>
+            緊急度：
+            <select v-model="emergency">
+              <option v-for="item in levels" :value="item.level">
+                {{ item.title }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="bottom" @click="insertTodo">
+          submit
+        </div>
+      </div>
+      <div>
+        <div
+          style="background-color: #004b97; width: 580px; margin-bottom: 10px;"
+        >
+          <span
+            v-for="(item,index) in title"
+            class="title"
+            :style="{'background-color':(index==ischeck)?'#4d8bd8':''}"
+            @click="showObj(item, index)"
+          >
+            {{item}}
+          </span>
+        </div>
+
+        <show-list
+          :obj="isshow"
+          :title="choseTitle"
+          @child-move="moveObj"
+        ></show-list>
+      </div>
+    </div>
+  </body>
+</html>
+<style>
+  #app {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+  }
+  #app > div {
+    margin-right: 10px;
+  }
+  .addList {
+    width: 300px;
+    background-color: #ffed97;
+  }
+
+  .item > div {
+    margin: 30px 20px;
+  }
+
+  .bottom {
+    background-color: #eaa34c;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .bottom:hover {
+    background-color: #e4aa63;
+  }
+
+  input[type="text"],
+  input[type="date"] {
+    border: 0px;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0);
+    color: #4f4f4f;
+    border: none;
+    border-bottom: 1px solid #9d9d9d;
+  }
+
+  input[type="text"]:focus,
+  input[type="date"]:focus {
+    outline: 0px;
+  }
+
+  .title {
+    display: inline-block;
+    color: white;
+    margin: 0px 20px;
+    padding: 5px 5px;
+  }
+
+  .innerDiv {
+    height: 60px;
+    line-height: 60px;
+    border-bottom: 1px solid #4f4f4f;
+  }
+
+  .inner {
+    display: inline-block;
+    width: 120px;
+  }
+
+  .inner:first-child {
+    width: 30px;
+  }
+
+  .button {
+    width: 120px;
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .submit {
+    background-color: #548c00;
+  }
+
+  .submit:hover {
+    background-color: #6f8d42;
+  }
+
+  .delete {
+    background-color: #ae0000;
+  }
+  .delete:hover {
+    background-color: #c93b3b;
+  }
+</style>
+<script>
+  const emg = [
+    { level: 1, title: "一般" },
+    { level: 2, title: "中等" },
+    { level: 3, title: "緊急" },
+  ];
+
+  Vue.component("show-list", {
+    template: `
+            <div>
+                <div>
+                    <span class="inner" v-for="item in head">
+                        {{item}}
+                    </span>
+                </div>
+                <div v-for="(item,index) in obj" class="innerDiv">
+                    <span class="inner">
+                        <input type="checkbox" v-model="isChose" :value="index" v-if="title!='delete'"/>
+                    </span>
+                    <span class="inner">
+                        {{item.taskName}}
+                    </span>
+                    <span class="inner">
+                        {{item.from}}
+                    </span>
+                    <span class="inner">
+                        {{item.getDate}}
+                    </span>
+                    <span class="inner">
+                        {{getEmergency(item.emergency)}}
+                    </span>
+                </div>
+                <div style="text-align: right; margin-top: 20px" v-if="obj.length!=0">
+                    <span class="button submit" v-if="title!='done' && title!='delete'" @click="doMove(title)">{{showButton}}</span>
+                    <span class="button delete" v-if="title!='delete'" @click="doMove('delete')">delete</span>
+                </div>
+                
+            </div>
+        `,
+    props: ["obj", "title"],
+    computed: {
+      showButton: function () {
+        let name = "";
+        if (this.title == "todo") {
+          name = "move to doing";
+        }
+        if (this.title == "doing") {
+          name = "move to done";
+        }
+        return name;
+      },
+    },
+    watch: {
+      obj: function () {
+        this.isChose = [];
+      },
+    },
+    data() {
+      return {
+        head: ["#", "任務名稱", "交辦人", "交辦日期", "緊急度"],
+        levels: emg,
+        isChose: [],
+      };
+    },
+    methods: {
+      getEmergency(lev) {
+          let msg = ''
+          this.levels.forEach(item => {
+              console.log(item)
+              if (item.level==lev) {
+                msg = item.title
+              }
+          })
+          return msg
+      },
+      doMove(sts) {
+        let rdata = {
+          turn: "",
+          to: "",
+          indexs: [],
+        };
+        switch (sts) {
+          case "todo":
+            rdata.turn = "todo";
+            rdata.to = "doing";
+            break;
+          case "doing":
+            rdata.turn = "doing";
+            rdata.to = "done";
+            break;
+          case "delete":
+            rdata.turn = this.title;
+            rdata.to = "delete";
+        }
+        rdata.indexs = this.isChose;
+        this.$emit("child-move", rdata);
+        this.isChose = [];
+      },
+    },
+  });
+
+  let vn = new Vue({
+    el: "#app",
+    data: {
+      taskName: "",
+      from: "",
+      getDate: "",
+      emergency: "1",
+      levels: emg,
+      title: ["todo", "doing", "done", "delete"],
+      todo: [],
+      doing: [],
+      done: [],
+      delete: [],
+      isshow: "",
+      choseTitle: "",
+      key: 0,
+      ischeck: 0,
+    },
+    methods: {
+      insertTodo() {
+        let obj = {
+          taskName: this.taskName,
+          from: this.from,
+          getDate: this.getDate,
+          emergency: this.emergency,
+        };
+        this.todo.push(obj);
+        this.taskName = "";
+        this.from = "";
+        this.getDate = "";
+        this.emergency = "";
+      },
+      showObj(title, inx) {
+        this.choseTitle = title;
+        this.isshow = this[title];
+        this.ischeck = inx;
+      },
+      moveObj(rdata) {
+        rdata.indexs.sort((x, y) => {
+          return x - y;
+        });
+
+        let newarray = [];
+        this[rdata.turn].forEach((element, index) => {
+          if (rdata.indexs.indexOf(index) != -1) {
+            this[rdata.to].push(element);
+          } else {
+            newarray.push(element);
+          }
+        });
+        this[rdata.turn] = [];
+
+        newarray.forEach((element) => {
+          this[rdata.turn].push(element);
+        });
+
+        this.isshow = "";
+        this.$nextTick(function () {
+          this.isshow = this[rdata.turn];
+        });
+      },
+    },
+    mounted() {
+      this.showObj("todo");
+      this.ischeck = 0;
+    },
+  });
+</script>
