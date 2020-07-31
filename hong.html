@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index0730</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">    
+        <div style="float:left;">
+            <div style="background-color: #66B3FF;height: 30px;line-height: 30px; text-align: center;">Add new task</div>
+            <div>
+                任務名稱: <input type="text" v-model="name" >
+            </div>
+            <div>
+                交辦人 : <input type="text" v-model="people" >
+            </div>
+            <div>
+                交辦日期: <input type="date" v-model="date" >
+            </div>
+            <div>
+                緊急度: <select v-model="urgency">
+                    <option value="一般">一般</option>
+                    <option value="中等">中等</option>
+                    <option value="緊急">緊急</option>
+                </select>
+            </div>
+            <div style="text-align: center; background-color: #FF9797;">
+                <button @click="add()">送出</button>
+            </div>
+        </div>
+        <div >
+            <div id="table">
+                <div class="table-row">
+                    <!-- <div class="table-tr">多選</div> -->
+                    <div class="table-tr">任務名稱</div>
+                    <div class="table-tr">交辦人</div>
+                    <div class="table-tr">交辦日期</div>
+                    <div class="table-tr">緊急度</div>
+                </div>
+                <div class="table-row" v-for="(data, index) in todo">
+                    <!-- <div class="table-cell"><input type="checkbox" v-model="checkedNames" :value="index"></div> -->
+                    <div class="table-cell">{{data.name}}</div>
+                    <div class="table-cell">{{data.people}}</div>
+                    <div class="table-cell">{{data.date}}</div>
+                    <div class="table-cell">{{data.urgency}}</div>    
+                    <div class="table-cell"><button @click="TodoToDoing(data, index)">變到doing</button></div>
+                    <div class="table-cell"><button @click="TodoToDelete(data, index)">變到delete</button></div>               
+                </div>
+                <!-- <div align="right"><button @click="deleteVal(checkedNames)">變到doing</button></div> -->
+            </div>
+        </div>
+
+        <div >
+            <div id="table">
+                <div class="table-row">
+                    <!-- <div class="table-tr1">多選</div> -->
+                    <div class="table-tr1">任務名稱</div>
+                    <div class="table-tr1">交辦人</div>
+                    <div class="table-tr1">交辦日期</div>
+                    <div class="table-tr1">緊急度</div>
+                </div>
+                <div class="table-row" v-for="(data, index) in doing">
+                    <div class="table-cell">{{data.name}}</div>
+                    <div class="table-cell">{{data.people}}</div>
+                    <div class="table-cell">{{data.date}}</div>
+                    <div class="table-cell">{{data.urgency}}</div>
+                    <div class="table-cell"><button @click="DoingToDelete(data, index)">變到delete</button></div>
+                </div>
+            </div>
+        </div>
+
+        <div >
+            <div id="table">
+                <div class="table-row">
+                    <!-- <div class="table-tr1">多選</div> -->
+                    <div class="table-tr3">任務名稱</div>
+                    <div class="table-tr3">交辦人</div>
+                    <div class="table-tr3">交辦日期</div>
+                    <div class="table-tr3">緊急度</div>
+                </div>
+                <div class="table-row" v-for="(data, index) in deleteList">
+                    <div class="table-cell">{{data.name}}</div>
+                    <div class="table-cell">{{data.people}}</div>
+                    <div class="table-cell">{{data.date}}</div>
+                    <div class="table-cell">{{data.urgency}}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+<script>
+    var app = new Vue({
+    el: '#app',
+    data: {
+        name:'',
+        people:'',
+        date:'',
+        urgency:'',
+        checkedNames: [],
+        todo:[{'name': '小莫', 'people': 3, 'date': '2020-07-20', 'urgency': '一般'},
+              {'name': '傑克', 'people': 2, 'date': '2020-08-15', 'urgency': '緊急'}],
+        doing:[{'name': '老高', 'people': 10, 'date': '2020-07-31', 'urgency': '中等'}],
+        deleteList:[{'name': '小明', 'people': 6, 'date': '2020-08-31', 'urgency': '中等'}]
+    },
+    methods : {
+        add(inx) {
+            temp = new Object();
+            if(this.name && this.people && this.date && this.urgency) {
+                temp['name'] = this.name;
+                temp['people'] = this.people;
+                temp['date'] = this.date;
+                temp['urgency'] = this.urgency;
+                this.todo.push(temp);
+                console.log(this.todo);
+                this.name = "";
+                this.people = "";
+                this.date = "";
+                this.urgency = "";
+            } else {
+                alert('請確實輸入資料');
+            }
+        }, 
+        TodoToDoing(data, index) {              
+                this.doing.push(data)
+                this.todo.splice(index,1);                
+            },
+        TodoToDelete(data, index) {              
+            this.deleteList.push(data)
+            this.todo.splice(index,1);                
+        },
+        DoingToDelete(data, index) {              
+            this.deleteList.push(data)
+            this.doing.splice(index,1);                
+        }
+    }
+    })
+</script>
+
+<style>
+    .table {
+        display: table;
+        border-collapse:separate;
+        border-spacing: 5px;
+        border: 2px solid #fff;
+    }
+
+    .table-row {
+        display: table-row;
+    }
+    .table-tr {
+        display: table-cell;
+        /* border: 1px solid #0000ff; */
+        background-color: #898990;
+        vertical-align: middle;
+        width: 80px;
+        color: #fff;
+    }
+
+    .table-tr1 {
+        display: table-cell;
+        /* border: 1px solid #0000ff; */
+        background-color: #C07AB8;
+        vertical-align: middle;
+        width: 80px;
+        color: #fff;
+    }
+
+    .table-tr3 {
+        display: table-cell;
+        /* border: 1px solid #0000ff; */
+        background-color: #FF2D2D;
+        vertical-align: middle;
+        width: 80px;
+        color: #fff;
+    }
+    .table-cell {
+        display: table-cell;
+        border: 1px solid #898990;
+        vertical-align: middle;
+    }
+</style>
+
+<!-- <style>
+    #app {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+  }
+  .addList {
+    width: 300px;
+    background-color: #ffed97;
+  }
+</style> -->
