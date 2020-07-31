@@ -92,10 +92,10 @@
                         <h1 class="h2">任務清單</h1>
                         <div class="btn-toolbar mb-2 mb-md-0">
                             <div class="btn-group mr-2">
-                                <button type="button" class="btn btn-sm btn-outline-secondary" @click.self="setPage('Todo')">Todo({{psdata.Todo.length}})</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" @click.self="setPage('Doing')">Doing({{psdata.Doing.length}})</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" @click.self="setPage('Done')">Done({{psdata.Done.length}})</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" @click.self="setPage('Delete')">Delete({{psdata.Delete.length}})</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary" @click.self="setPage('Todo')" :class="{active: page == 'Todo'}">Todo({{psdata.Todo.length}})</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" @click.self="setPage('Doing')" :class="{active: page == 'Doing'}">Doing({{psdata.Doing.length}})</button>
+                                <button type="button" class="btn btn-sm btn-outline-success" @click.self="setPage('Done')" :class="{active: page == 'Done'}">Done({{psdata.Done.length}})</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" @click.self="setPage('Delete')" :class="{active: page == 'Delete'}">Delete({{psdata.Delete.length}})</button>
                             </div>
                         </div>
                     </div>
@@ -120,13 +120,14 @@
             template : `
             <div>
                 <table class="table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">#</th>
+                    <thead class="thead">
+                        <tr :class="{'table-info': nowpages == 'Todo', 'table-secondary': nowpages == 'Doing', 'table-success': nowpages == 'Done', 'table-danger': nowpages == 'Delete'}">
+                            <th scope="col">#{{nowpages}}</th>
                             <th scope="col">任務名稱</th>
                             <th scope="col">交辦人</th>
                             <th scope="col">交辦日期</th>
                             <th scope="col">緊急度</th>
+                            <th scope="col" v-if="nowpages == 'Done'">完成日期</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -138,6 +139,7 @@
                             <td>{{item.who}}</td>
                             <td>{{item.dat}}</td>
                             <td>{{item.typ}}</td>
+                            <td v-if="item.done">{{item.done}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -205,7 +207,13 @@
                             if(chked[inx].checked) {
                                 console.log(this.psdata[org][chked[inx].value]);
                                 if(this.psdata[org][chked[inx].value]) {
-                                    this.psdata[tsc].push(this.psdata[org][chked[inx].value]);
+                                    if(tsc == 'Done') {
+                                        var temp = this.psdata[org][chked[inx].value];
+                                        temp['done'] = getTodayDate();
+                                        this.psdata[tsc].push(temp);
+                                    } else {
+                                        this.psdata[tsc].push(this.psdata[org][chked[inx].value]);
+                                    }
                                     del.push(chked[inx].value);
                                 }
                             }
@@ -236,5 +244,13 @@
                 this.nowpage = this.psdata['Todo'];
             }
         })
+        function getTodayDate() {
+            var fullDate = new Date();
+            var yyyy = fullDate.getFullYear();
+            var MM = (fullDate.getMonth() + 1) >= 10 ? (fullDate.getMonth() + 1) : ("0" + (fullDate.getMonth() + 1));
+            var dd = fullDate.getDate() < 10 ? ("0"+fullDate.getDate()) : fullDate.getDate();
+            var today = yyyy + "-" + MM + "-" + dd;
+            return today;
+        }
     </script>
 </html>
