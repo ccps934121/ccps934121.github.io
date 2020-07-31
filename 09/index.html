@@ -50,18 +50,18 @@
             <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+            <input class="form-control form-control-dark w-100" v-model="Search" type="text" placeholder="Search" aria-label="Search">
             <ul class="navbar-nav px-3">
                 <li class="nav-item text-nowrap">
-                    <a class="nav-link" href="#">Sign out</a>
+                    <a class="nav-link" href="#" onclick="localStorage.clear();window.location.reload();"> ReStart</a>
                 </li>
             </ul>
         </nav>
 
         <div class="container-fluid">
             <div class="row">
-                <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-                    <div class="sidebar-sticky pt-3">
+                <nav id="sidebarMenu" class="col-md-3 col-lg-3 d-md-block bg-light sidebar collapse">
+                    <div class="sidebar-sticky pt-3" style="margin: 20px;">
                         <div class="form-group">
                             <label for="exampleInputEmail1">任務名稱</label>
                             <input type="text" class="form-control" id="name">
@@ -82,12 +82,12 @@
                                 <option value="緊急">緊急</option>
                                 </select>
                         </div>
-                        <div class="form-group" align="center">
+                        <div class="form-group" align="right">
                             <button type="button" class="btn btn-primary" @click="addPSData()">送出</button>
                         </div>
                     </div>
                 </nav>
-                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                <main role="main" class="col-md-9 ml-sm-auto col-lg-9 px-md-4">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2">任務清單</h1>
                         <div class="btn-toolbar mb-2 mb-md-0">
@@ -99,7 +99,7 @@
                             </div>
                         </div>
                     </div>
-                    <pslist :mypslist="nowpage" :nowpages="page" @child-event="changTSC"></pslist>
+                    <pslist :mypslist="nowpage" :nowpages="page" :datasearch="Search" @child-event="changTSC"></pslist>
                 </main>
             </div>
         </div>
@@ -110,6 +110,12 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script> -->
     <!-- <script src="dashboard.js"></script></body> -->
     <script>
+        let EIPPSData = (localStorage.getItem("EIPPSData")) ? JSON.parse(localStorage.getItem("EIPPSData")) : {
+            Todo : [],
+            Doing : [],
+            Done : [],
+            Delete : []
+        };
         Vue.component('pslist',{
             template : `
             <div>
@@ -124,9 +130,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, id) in mypslist">
+                        <tr v-for="(item, id) in mypslist" v-if="!datasearch || datasearch && item.nam.indexOf(datasearch) != -1">
                             <td scope="row">
-                                <input type="checkbox" class="chbox" >
+                                <input type="checkbox" class="chbox" v-bind:value="id" v-if="nowpages != 'Delete'">
                             </td>
                             <td>{{item.nam}}</td>
                             <td>{{item.who}}</td>
@@ -135,11 +141,11 @@
                         </tr>
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-success" @click="chtsc(tsc[tsc.indexOf(nowpages)+1], tsc[tsc.indexOf(nowpages)])" v-if="tsc.indexOf(nowpages)+1 >= 0 && tsc.indexOf(nowpages)+1 < 3">Next to {{tsc[tsc.indexOf(nowpages)+1]}}</button>
-                <button type="button" class="btn btn-danger" @click="chtsc('Delete', tsc[tsc.indexOf(nowpages)])" >Delete</button>
+                <button type="button" class="btn btn-success" @click="chtsc(tsc[tsc.indexOf(nowpages)+1], tsc[tsc.indexOf(nowpages)])" v-if="mypslist.length > 0 && tsc.indexOf(nowpages)+1 >= 0 && tsc.indexOf(nowpages)+1 < 3">Next to {{tsc[tsc.indexOf(nowpages)+1]}}</button>
+                <button type="button" class="btn btn-danger" @click="chtsc('Delete', tsc[tsc.indexOf(nowpages)])" v-if="mypslist.length > 0 && nowpages != 'Delete'">Delete</button>
             </div>
             `,
-            props : ['mypslist', 'nowpages'],
+            props : ['mypslist', 'nowpages', 'datasearch'],
             methods: {
                 chtsc(tsc, org) {
                     this.$emit('child-event', tsc, org, document.getElementsByClassName('chbox'));
@@ -161,12 +167,8 @@
                 food : 'Todo',
                 page : 'Todo',
                 nowpage : [],
-                psdata : {
-                    Todo : [],
-                    Doing : [],
-                    Done : [],
-                    Delete : []
-                }
+                Search : '',
+                psdata : EIPPSData
             },
             methods: {
                 addPSData() {
@@ -183,6 +185,7 @@
                             'typ' : typ
                         }
                         this.psdata[now].push(psdata);
+                        localStorage.setItem("EIPPSData", JSON.stringify(this.psdata));
                         document.getElementById('name').value = '';
                         document.getElementById('who').value = '';
                     } else {
@@ -196,16 +199,27 @@
                     this.nowpage = this.psdata[s];
                 },
                 changTSC(tsc, org ,chked) {
-                    console.log(org, tsc);
+                    var del = new Array();
                     for(inx in chked) {
-                        //console.log(chked[inx].checked);
-                        if(chked[inx].checked) {
-                            if(this.psdata[org]) {
-                                this.psdata[tsc].push(this.psdata[org][inx]);
-                                this.psdata[org].splice(inx, 1);;
+                        if(chked[inx].value) {
+                            if(chked[inx].checked) {
+                                console.log(this.psdata[org][chked[inx].value]);
+                                if(this.psdata[org][chked[inx].value]) {
+                                    this.psdata[tsc].push(this.psdata[org][chked[inx].value]);
+                                    del.push(chked[inx].value);
+                                }
                             }
                         }
                     }
+                    if(del.length > 0) {
+                        del.sort(function (a, b) {
+                            return b - a //順序反轉
+                        });
+                        for(inx in del) {
+                            this.psdata[org].splice(del[inx], 1);
+                        }
+                    }
+                    localStorage.setItem("EIPPSData", JSON.stringify(this.psdata));
                     chk = document.getElementsByClassName('chbox');
                     for(inx in chked) {
                         chked[inx].checked = false;

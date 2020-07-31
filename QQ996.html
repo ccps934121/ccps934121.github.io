@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <title>QQQ</title>
+</head>
+<body>
+    <div id="app">
+
+        <div class='adddiv'>
+        任務名稱:
+          <input type='text' v-model.lazy='tNam'/>
+        交辦人:
+          <input type='text' v-model.lazy='tMan'/>  
+        交辦日期:
+          <input type='date' v-model.lazy='tDay'/>  
+        緊急:
+         <select v-model = 'tzz'>
+           <option v-for="(val, key) in selectlist[0]" :value="key">
+                    {{ val }}
+           </option>
+         </select>
+          <button @click='add'>+ToDo直接新增一筆任務+</button>  
+        
+        </div>
+        
+        
+        <div class="nav">
+          <span class="menu"
+              :class="{'check': check==index}"
+              v-for="(item,index) in menu_type"
+              @click="isCheck(index, item.type)">
+          {{ item.name }}
+          </span>
+        </div>
+        
+        <main-component :lists="istype" @move="moveGOGO"
+     ></main-component>
+     
+        
+    </div>
+    
+</body>
+</html>
+<script>
+    Vue.component('main-component',{
+	template:`
+  <div>
+			<div v-for="(list,key) in lists" class="item">
+     
+     
+        <div  style="float:left  " >
+          <h3>{{ list.Nam }}</h3>
+          <h3>{{ list.Man }}</h3>
+          <h3>{{ list.day }}</h3>
+          <h3>{{ list.ZZ }}</h3>
+
+        </div>
+           <div style="float: right" >
+        <input type='checkbox' :value="list" v-model='isChose' class='chk'></div>  
+      </div>
+    	<div class='botton'>
+        <div> 搬家選我=>
+          <select v-model = 'tGOGO'>
+             <option v-for="(val, key) in dolist" :value="val">
+                      {{ val }}
+             </option>
+           </select>
+        </div>
+        <button @click='change'>GOGO</button>
+    </div>
+    
+  </div>` ,
+  props: ['lists'],
+  data() {
+      return {
+        dolist:['todo','doing','done','delete'],
+        isChose: [],
+        tGOGO: 0,
+      };
+    },
+  methods: {
+
+    change: function (){
+    
+    console.log(this.isChose)
+       if (!this.tGOGO) {
+       alert('沒選去哪')
+       return
+       }
+      let data = {};
+      let sts = this.tGOGO
+   
+      data.indexs = this.isChose;
+      data.to = this.tGOGO
+      this.$emit("move", data);
+      this.isChose = [];
+    }
+  }
+})
+new Vue({
+  el: "#app",
+  data: {
+    selectlist:[{'1':'緊急','2':'緊急*2','10':'緊急*10'}],
+  	menu_type: [{'type': 'todo', 'name': 'todo'},
+                {'type': 'doing', 'name': 'doing'},
+                {'type': 'done', 'name': 'done'},
+                {'type': 'delete', 'name': 'delete'}],
+    check: '',
+    chooseType: 'todo',
+    tNam: '任務++',
+    tMan: '交辦人++',
+    tDay: '2020-07-30',
+    tzz:'1',
+    tGOGO:'',
+    TaskCouunt:0,
+    missonCart: [],
+    todo: [],
+    doing: [],
+    done: [],
+    delete: [],
+    isChose: [],
+  },
+  computed: {
+  	istype: function() {
+    	let obj = this[this.chooseType]
+    	return obj
+    }
+  },
+  methods: {
+  	
+    isCheck (inx, type){
+    	this.check = inx
+      this.chooseType = type      
+    },
+    add: function(){
+    	if (this.tDay && this.tNam && this.tMan) {
+        this.TaskCouunt +=1
+    	let a ={'day':this.tDay,'Nam':this.tNam,'Man':this.tMan,'pkey':this.TaskCouunt,'ZZ':this.selectlist[0][this.tzz]}
+        this.todo.push(a);
+        
+     /*    this.tDay = ''
+        this.tNam = '' 
+        this.tMan = '' */
+      } else {
+      	alert('煤田丸R')
+      }
+    },
+    moveGOGO: function(data) {
+       /* this[this.chooseType].delete */;
+
+
+
+
+     switch (this[data.to]) {
+
+       
+       default:
+       /*山原本的 新增新ㄉ*/
+       	data.indexs.forEach(element => this[data.to].push(element));
+        data.indexs.forEach(element => this[this.chooseType].splice(element, 1))
+
+       break;
+       
+       }
+     
+      
+       
+    
+    }
+  
+  }
+})
+</script>
+<style>
+    
+.adddiv {
+    width: 100%;
+    background-color: #D70F64;
+    
+}
+.item {
+  overflow: auto;
+  width: 250px;
+  height: 200px;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  border-radius: 4px;
+  float: left;
+  padding: 5px;
+  margin: 5px;
+}
+.item:hover {
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.1);
+}
+#app {
+  background: #fff;
+  border-radius: 4px;
+  padding: 20px;
+  transition: all 0.2s;
+}
+.nav {
+  margin-bottom: 20px;
+}
+.menu {
+  margin-right: 10px;
+  cursor: pointer;
+}
+.check {
+  font-weight:bold;
+  text-decoration: underline;
+}
+.botton {
+  text-align: right;
+  margin-top: 20px;
+}
+.chk {
+  width: 25px;
+  height: 25px;
+}
+
+</style>
