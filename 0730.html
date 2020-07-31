@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+    <script src="https://unpkg.com/vue"></script>
+    <!-- 生产环境版本，优化了尺寸和速度 -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+</head>
+<body>
+    <div id="app">
+        Add new task
+        <br>
+        任務名稱: <input type="text" value="" v-model='name'>
+        <br>
+        交辦人: <input type="text" value="" v-model='emp'>
+        <br>
+        交辦日期: <input type="date" value="" v-model='date'>
+        <br>
+        緊急度:
+        <input type="radio" id="normal" v-model="radio" value="一般"/>
+        <label for="normal">一般</label>
+        <input type="radio" id="middle" v-model="radio" value="中等"/>
+        <label for="middle">中等</label>
+        <input type="radio" id="hurry" v-model="radio" value="緊急"/>
+        <label for="hurry">緊急</label>
+        <br>
+        <button @click="arrpush()">送出</button>
+        <br>
+        <br>
+        <br>
+        <div class="itemdiv">
+            <span class="item" v-for="item in type" @click="change(item.name)">{{item.name}}</span>
+        </div>
+        <table width="100%">
+            <tr>
+                <td width="5%">#</td>
+                <td width="40%">任務名稱</td>
+                <td width="20%">交辦人</td>
+                <td width="20%">交辦日期</td>
+                <td width="15%">緊急度</td>
+            </tr>
+        </table>
+        <task-list :dodo="this[now]" :nowdo="now"  @child-event="move"></task-list>
+    </div>
+</body>
+</html>
+<script>
+    Vue.component('task-list',{
+        template:`
+            <div>
+                <table width="100%">
+                    <tr v-for="(data,index) in dodo">
+                            <td width="5%"><input type="checkbox" :value="index" v-model="movetask"></td>
+                            <td width="40%">{{data.name}}</td>
+                            <td width="20%">{{data.emp}}</td>
+                            <td width="20%">{{data.date}}</td>
+                            <td width="15%">{{data.kind}}</td>
+                    </tr>
+                </table>
+                <div v-if="dodo.length > 0">
+                    <button v-if="nowdo=='todo'"  @click="add('todo', 'doing')">move to doing</button>
+                    <button v-if="nowdo=='doing'"  @click="add('doing', 'done')">move to done</button>
+                    <button v-if="nowdo!='delete'"  @click="del('delete')">delete</button>
+                </div>
+            </div>
+        `,
+        props: ['dodo', 'nowdo'],
+        data(){
+            return{
+                task:'',
+                value: [],
+                movetask: [],
+            }
+        },
+        methods: {
+            add(table, movetalbe){
+                this.$emit('child-event', table, movetalbe, this.movetask[0]);
+                this.movetask=[];
+            },
+            del(table){
+                this.$emit('child-event', this.nowdo, table, this.movetask[0]);
+            }
+        },
+    })
+    let vm = new Vue({
+        el: '#app',
+        data:{
+            name:'',
+            emp:'',
+            radio:'',
+            date:'',
+            task:'',
+            todo:[],
+            doing:[],
+            done:[],
+            delete:[],
+            value:[],
+            now:'todo',
+            type: [{'type': 'todo', 'name': 'todo'},
+                        {'type': 'doing', 'name': 'doing'},
+                        {'type': 'done', 'name': 'done'},
+                        {'type': 'delete', 'name': 'delete'}],
+        },
+        methods:{
+            change(type) {
+                this.now = type
+                this.nowtask = this[type]
+            },
+            arrpush(){
+                let aa = {'name':this.name, 'emp':this.emp, 'date':this.date, 'kind':this.radio}
+                this.todo.push(aa)
+                this.name='';
+                this.emp='';
+                this.radio='';
+                this.date='';
+            },
+            move(table, movetable, motask){
+                console.log(this[table][motask]);
+                this[movetable].push(this[table][motask])
+                console.log(this[movetable]);
+                this[table].splice(motask,1)
+            },
+        },
+    })
+</script>
+<style>
+    span {
+        margin-right:20px; 
+    }
+    span:hover {
+        cursor: pointer;
+        background-color: yellow;
+        color: red;
+    }
+    .item{
+        font-size: 20px;
+        color: darkblue;
+    }
+    .itemdiv{
+        font-size: 22px;
+        background-color:yellowgreen;
+    }
+</style>

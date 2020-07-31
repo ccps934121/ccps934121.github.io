@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div class="addList" >
+            <div class="item" >
+                <div>任務名稱：<input type="text" v-model="taskName" /></div>
+                <div>交辦人：<input type="text" v-model="from" /></div>
+                <div>交辦日期：<input type="date" v-model="getDate" /></div>
+            </div>
+            <div><input type="button" value="送出" @click="addList"></div>
+        </div>
+ 
+        <div style="float:left;width:400px;height:200px; background-color: aquamarine; margin-right:10px;">
+            <div>代辦事項</div>
+            <div class="table-row">
+                <div class="table-tr"></div>
+                <div class="table-tr">任務名稱</div>
+                <div class="table-tr">交辦人</div>
+                <div class="table-tr">交辦日期</div>
+            </div>
+            <div class="table-row" v-for="(data, index) in todolist">
+                <div><input type="button" value="刪除" @click="deletTodo"></div>
+                <div><input type="button" value="完成" @click="finishTodo"></div>
+                <div class="table-cell">{{data.taskName}}</div>
+                <div class="table-cell">{{data.from}}</div>
+                <div class="table-cell">{{data.getDate}}</div>
+            </div>
+        </div>
+        
+        <div style="float:left;width:400px;height:200px; background-color:deepskyblue; margin-right:10px;">
+            <div>完成事項</div>
+            <div class="table-row">
+                <div class="table-tr">任務名稱</div>
+                <div class="table-tr">交辦人</div>
+                <div class="table-tr">交辦日期</div>
+            </div>
+            <div class="table-row" v-for="(data, index) in finishlist">
+                <div class="table-cell">{{data.taskName}}</div>
+                <div class="table-cell">{{data.from}}</div>
+                <div class="table-cell">{{data.getDate}}</div>
+            </div>
+        </div>
+        
+        <div style="float:left;width:400px;height:200px; background-color:dodgerblue; margin-right:10px;">
+            <div>刪除事項</div>
+            <div class="table-row">
+                <div class="table-tr">任務名稱</div>
+                <div class="table-tr">交辦人</div>
+                <div class="table-tr">交辦日期</div>
+            </div>
+            <div class="table-row" v-for="(data, index) in deletelist">
+                <div class="table-cell">{{data.taskName}}</div>
+                <div class="table-cell">{{data.from}}</div>
+                <div class="table-cell">{{data.getDate}}</div>
+            </div>
+        </div>
+ 
+    </div>
+</body>
+ 
+<script>
+ 
+    
+ 
+    let vm = new Vue({
+        el: '#app',
+        data : {
+            nav: ['全部', '完成', '刪除'],
+            isindex: null,
+            todolist: [],
+            finishlist:[],
+            deletelist:[],
+            taskName: "",
+            from: "",
+            getDate:"",
+        },
+        methods: {
+           addList(data,index){
+                let obj = {
+                    taskName: this.taskName,
+                    from: this.from,
+                    getDate: this.getDate
+                }
+                this.todolist.push(obj)
+                
+           },
+           deletTodo(data,index){
+               let deleteobj = {
+                    taskName: this.taskName,
+                    from: this.from,
+                    getDate: this.getDate
+               }
+               this.deletelist.push(deleteobj)
+               this.todolist.splice(index,1)
+           },
+           finishTodo(data,index){
+               let finishobj = {
+                    taskName: this.taskName,
+                    from: this.from,
+                    getDate: this.getDate
+               }
+               this.finishlist.push(finishobj)
+               this.todolist.splice(index,1)
+           }
+        }
+    })
+</script>
+ 
+<style>
+     .table-row {
+            display: table-row;
+        }
+ 
+    .table-cell {
+         display: table-cell;
+         border: 1px solid #898990;
+        vertical-align: middle;
+     }
+ 
+     .addList {
+        width: 300px;
+        background-color: #ffed97;
+    }
+ 
+    span {
+       margin-right:20px; 
+    }
+ 
+    span:hover {
+        cursor: pointer;
+        color: red;
+    }
+ 
+    .ischose {
+        color: blue;
+        text-decoration: underline;
+    }
+ 
+    .table-tr {
+        display: table-cell;
+        background-color: #898990;
+        vertical-align: middle;
+        width: 150px;
+        color: #fff;
+    }
+</style>
+ 
+</html>
+ 
+
