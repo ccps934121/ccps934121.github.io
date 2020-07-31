@@ -8,8 +8,14 @@
   </head>
   <body>
     <div id="app">
-      <div class="person" v-for="member in members" @click="openfile(member.href)">
-        {{member.name}}の
+      <div style="width: 450px; display: flex; flex-wrap: wrap;">
+        <div
+          class="person"
+          v-for="member in members"
+          @click="openfile(member.href)"
+        >
+          {{member.name}}の
+        </div>
       </div>
     </div>
   </body>
@@ -44,12 +50,13 @@
         { name: "琦堯", href: "index9.html" },
         { name: "鴻輝", href: "hong.html" },
         { name: "冠均", href: "QQ996.html" },
+        { name: "志宏", href: "ZH_0730Practice1.html" },
       ],
     },
     methods: {
-        openfile(url){
-            window.location.href = url
-        }
-    }
+      openfile(url) {
+        window.location.href = url;
+      },
+    },
   });
 </script>
