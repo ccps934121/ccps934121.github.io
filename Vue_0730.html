@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="title">
+            Add a new task
+            <div class="item">
+                <div>
+                    任務名稱：<br/>
+                    <input type="text" v-model="list.task"/>
+                </div>
+                <div>
+                    交辦人：<br/>
+                    <input type="text" v-model="list.name"/>
+                </div>
+                <div>
+                    交辦日期：<br/>
+                    <input type="date" v-model="list.date"/>
+                </div>
+                <div>
+                    緊急度：<br/>
+                    <select v-model="list.level"/> 
+                        <option value="1">普通</option>
+                        <option value="2">中等</option>
+                        <option value="3">緊急</option>
+                    </select>
+                </div>
+                <div class="button" @click="submit">
+                    submit
+                </div>       
+            </div>
+        </div>
+        
+        <div class="title"> 
+            <div class="item">
+                TODO
+            </div>
+            <span>
+                #
+            </span>
+            <span>
+                任務名稱
+            </span>
+            <span>
+                交辦人
+            </span>
+            <span>
+                交辦日期
+            </span>
+            <span>
+                緊急度
+            </span>
+            <div v-for="(obj,inx) in listarr">
+                <input type="button" @click="doing(obj, inx)" value="送出">
+                {{obj.tas}}
+                {{obj.nam}}
+                {{obj.dat}}
+                {{obj.lvl}}
+                <input type="button" @click="del(obj, inx)" value="刪除">
+            </div>
+        </div>
+        <div class='title'>
+            <div class="item">
+                DOING
+            </div>
+            <span>
+                #
+            </span>
+            <span>
+                任務名稱
+            </span>
+            <span>
+                交辦人
+            </span>
+            <span>
+                交辦日期
+            </span>
+            <span>
+                緊急度
+            </span>
+            <div v-for="(doobj,inx) in doingarr">
+                <input type="button" @click="done(doobj,inx)" value="送出">
+                {{doobj.tas}}
+                {{doobj.nam}}
+                {{doobj.dat}}
+                {{doobj.lvl}}
+                <input type="button" @click="del(doobj,inx)" value="刪除">
+            </div>
+        </div>
+        <div class='title'>
+            <div class="item">
+                DONE
+            </div>
+            <span>
+                #
+            </span>
+            <span>
+                任務名稱
+            </span>
+            <span>
+                交辦人
+            </span>
+            <span>
+                交辦日期
+            </span>
+            <span>
+                緊急度
+            </span>
+            <div v-for="doneobj in donearr">
+                <input type="button" @click="del(doneobj,inx)" value="送出">
+                {{doneobj.tas}}
+                {{doneobj.nam}}
+                {{doneobj.dat}}
+                {{doneobj.lvl}}
+            </div>
+        </div>
+        <div class='title'>
+            <div class="item">
+                DELETE
+            </div>
+            <span>
+                #
+            </span>
+            <span>
+                任務名稱
+            </span>
+            <span>
+                交辦人
+            </span>
+            <span>
+                交辦日期
+            </span>
+            <span>
+                緊急度
+            </span>
+            <div v-for="(delobj,inx) in delarr">
+                {{delobj.tas}}
+                {{delobj.nam}}
+                {{delobj.dat}}
+                {{delobj.lvl}}
+            </div>
+        </div>
+        
+    </div>
+
+</body>
+</html>
+<style>
+    #app {
+        display: flex;
+        flex-direction: row;
+        background-color: whitesmoke;
+    }
+
+    .title{
+        background-color: lightseagreen;
+        width: 250px;
+        margin-right: 29px;
+    }
+
+    .item{
+        background-color: lightblue;
+        width: 250px;
+
+    }
+    .button{
+        background-color: lightseagreen;
+        width: 250px;
+    }
+    .button:hover{
+        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.1);
+        background-color: #de4988;
+        cursor: pointer;
+    }
+</style>
+<script>
+    let vm = new Vue({
+        el:'#app',
+        data:{
+            list:{
+                task:'',
+                name:'',
+                date:'',
+                level:''
+            },
+            listarr:[],
+            doingarr:[],
+            donearr:[],
+            delarr:[]
+        },
+        methods:{
+            submit(){
+                let obj = {
+                    'tas':this.list.task,
+                    'nam':this.list.name,
+                    'dat':this.list.date,
+                    'lvl':this.list.level       
+                }
+                this.list.task = ''
+                this.list.name = ''
+                this.list.date = ''
+                this.list.level = ''
+                // console.log(obj)
+                this.listarr.push(obj)
+                // console.log(this.listarr)
+            },
+            doing(obj, inx){
+                this.doingarr.push(obj)
+                // console.log(this.listarr)
+                // console.log(obj)
+                this.listarr.splice(inx,1)
+            },
+            done(obj, inx){
+                this.donearr.push(obj)
+                this.doingarr.splice(inx,1)
+            },
+            del(obj, inx){
+                this.delarr.push(obj)
+                this.donearr.splice(inx,1)
+                this.doingarr.splice(inx,1)
+                this.listarr.splice(inx,1)
+            }
+        }
+    }) 
+</script>
