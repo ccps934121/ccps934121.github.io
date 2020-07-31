@@ -39,10 +39,10 @@
   <body>
     <div id="app">
         <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">我是冠軍我想報告</a>
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">冠軍你快勒馬</a>
         <ul class="navbar-nav px-3">
             <li class="nav-item text-nowrap">
-            <a class="nav-link" href="#">嘿嘿</a>
+            <a class="nav-link" href="#">嘿嘿， 冠軍想報告</a>
             </li>
         </ul>
         </nav>
@@ -63,12 +63,16 @@
                         </div>
                         <div class="nav-item">
                             <a class="nav-link" href="#">
-                                <div>交辦日期 : <input type="text"  v-model="m_date" style="width: 200px;"></div>
+                                <div>交辦日期 : <input type="date"  v-model="m_date" style="width: 200px;"></div>
                             </a>
                         </div>
                         <div class="nav-item">
                             <a class="nav-link" href="#">
-                                <div>緊急度 : <input type="text"  v-model="m_typ" style="width: 200px;"></div>
+                                <!-- <div>緊急度 : <input type="text"  v-model="m_typ" style="width: 200px;"></div> -->
+                                <div>緊急度 : <select class="form-control" v-model="m_typ" >
+                                    <option v-for="(val,key) in m_choose" id="key">{{val}}</option>
+                                </select>
+                                </div>
                             </a>
                         </div>
                         <div class="nav-item">
@@ -81,18 +85,18 @@
                 </nav>
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">vue好難我好快樂</h1>
+                    <h1 class="h2">我不會vue但是我好快樂</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group mr-2">
                             <button type="button" class="btn btn-outline-primary" @click="nowAct('todo');">Todo({{stagecount.todo}})</button>
                             <button type="button" class="btn btn-outline-primary" @click="nowAct('doing');">Doing({{stagecount.doing}})</button>
-                            <button type="button" class="btn btn-outline-primary" @click="nowAct('done');">Done({{stagecount.done}})</button>
-                            <button type="button" class="btn btn-outline-primary" @click="nowAct('delete');">Delete({{stagecount.delete}})</button>
+                            <button type="button" class="btn btn-outline-success" @click="nowAct('done');">Done({{stagecount.done}})</button>
+                            <button type="button" class="btn btn-outline-danger" @click="nowAct('delete');">Delete({{stagecount.delete}})</button>
                         </div>
                         
                     </div>
                 </div>
-                <fp-post :myfp="myfpData" :mysort="now_do" :p_stagecount="stagecount"></fp-post>
+                <fp-post :myfp="myfpData" :mysort="now_do" :p_stagecount="stagecount" :p_choose="m_choose"></fp-post>
                 </main>
             </div>
         </div>
@@ -138,12 +142,7 @@
                 </thead>
                 <tbody>
                 <tr v-for="(val,key) in myfp[mysort]">
-                    <div v-if="mysort=='done'">
-                        <td></td>
-                    </div>
-                    <div v-else> 
-                        <th scope="row"><input class="okokitm" type="checkbox"></th>
-                    </div>
+                    <th scope="row"><input class="okokitm" type="checkbox"></th>
                     <td>{{val.m_name}}</td>
                     <td>{{val.m_emp}}</td>
                     <td>{{val.m_date}}</td>
@@ -154,16 +153,23 @@
                 </tr>
                 </tbody>
             </table>
-            <div v-if="mysort=='done'">
-                <div><button @click="deleteitm('done');">delete</button></div>
-            </div>
-            <div v-else> 
-                <div><button @click="moveitm('done');">move to {{dosort[mysort]}}</button><button @click="deleteitm('done');">delete</button></div>
+            <div v-if="mysort!=''">
+                <div v-if="mysort=='done'">
+                    <div><button @click="deleteitm('done');">delete</button></div>
+                </div>
+                <div v-else> 
+                    <div v-if="mysort=='delete'"> 
+                        <div><button @click="moveitm('done');">move to {{dosort[mysort]}}</button></div>
+                    </div>
+                    <div v-else> 
+                        <div><button @click="moveitm('done');">move to {{dosort[mysort]}}</button><button @click="deleteitm('done');">delete</button></div>
+                    </div>
+                </div>
             </div>
             
         </div>
         `,
-        props:['myfp','mysort','p_stagecount'],
+        props:['myfp','mysort','p_stagecount','p_choose'],
         data(){
             return{
                 count:0,
@@ -224,6 +230,7 @@
                     nowArr['m_emp'] = this.m_emp;
                     nowArr['m_date'] = this.m_date;
                     nowArr['m_typ'] = this.m_typ;
+                    console.log(this.m_typ);
                     console.log(this.myfpData['todo']);
                     this.myfpData['todo'].push(nowArr);
                     this.stagecount['todo']+=1;
@@ -260,7 +267,7 @@
             'm_date':'2020-07-31',
             'm_typ':'1',
             'chk_itm':{},
-            'now_do':'',
+            'now_do':'todo',
             'img':'<img src="data:image/jpeg;base64,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">',
             'myfpData':{todo: [],
                         doing: [],
@@ -270,7 +277,12 @@
                         doing: 0,
                         done: 0,
                         delete: 0,},
-            }
+            
+            'm_choose':{1: '還好',
+                        2: '有點餓',
+                        3: '好餓',
+                        4: '快死掉惹',},
+            },
 
     })
 </script>
