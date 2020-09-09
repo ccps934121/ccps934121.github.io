@@ -10,6 +10,7 @@
     <div id="app">
       <div class="person" @click="toUrl('Midterm/index.html')">Midterm demo</div>
       <div class="person" @click="toUrl('dashboard/index.html')">DashBoard</div>
+      <div class="person" @click="toUrl('IFLB/index.html')">IFLB</div>
     </div>
   </body>
 </html>
@@ -40,24 +41,11 @@
   let vm = new Vue({
     el: "#app",
     data: {
-      members: [
-        { name: "子婷", href: "ziting.html" },
-        { name: "志遠", href: "./09/index.html" },
-        { name: "琦堯", href: "index9.html" },
-        { name: "鴻輝", href: "hong.html" },
-        { name: "冠均", href: "QQ996.html" },
-        { name: "志宏", href: "0730Practice1.html" },
-        { name: "和娟", href: "07.30.html" },
-        { name: "子靖", href: "0730.html" },
-        { name: "佳穎", href: "Vue_0730.html" },
-      ],
-      isurl: '',
-      ischose: ''
+
     },
     methods: {
       toUrl(url) {
         let endpoint = url
-        // this.isurl = url
         window.location.href = endpoint;
       },
     },
