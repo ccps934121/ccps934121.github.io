@@ -10,7 +10,6 @@
     <div id="app">
       <div class="person" @click="toUrl('Midterm/index.html')">Midterm demo</div>
       <div class="person" @click="toUrl('dashboard/index.html')">DashBoard</div>
-      <div class="person" @click="toUrl('IFLB/index.html')">IFLB</div>
     </div>
   </body>
 </html>
@@ -33,16 +32,10 @@
     background-color: #afd4f7;
     transition: 0.3s;
   }
-  .ischose {
-    background-color: #CF9E9E;
-  }
 </style>
 <script>
   let vm = new Vue({
     el: "#app",
-    data: {
-
-    },
     methods: {
       toUrl(url) {
         let endpoint = url
