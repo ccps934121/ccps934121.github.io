@@ -14,18 +14,16 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "precache-manifest.1cbf373c5354f6cdfef9913aec41abaa.js"
+  "precache-manifest.df7135a58cbb66977a0480d0e53c1b67.js"
 );
 
-workbox.core.setCacheNameDetails({prefix: "pwa-sample"});
+workbox.core.setCacheNameDetails({prefix: "vuejs-pwa"});
 
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
-
-workbox.core.clientsClaim();
 
 /**
  * The workboxSW.precacheAndRoute() method efficiently caches and responds to
@@ -34,5 +32,3 @@ workbox.core.clientsClaim();
  */
 self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
-
-workbox.routing.registerRoute(/^https:\/\/connpass.com\/api\/v1\/event\//, new workbox.strategies.NetworkFirst({ "cacheName":"api","fetchOptions":{"mode":"cors"},"matchOptions":{"ignoreSearch":true}, plugins: [new workbox.expiration.Plugin({ maxAgeSeconds: 86400, purgeOnQuotaError: false })] }), 'GET');
